@@ -4,12 +4,13 @@
 [![Github Size](https://img.shields.io/github/repo-size/discord-card/levelcard?color=00DEC8&label=SIZE&style=for-the-badge)](https://www.npmjs.com/package/moodle-console)
 
 # Moodle Client Console
-This is a simple Client for moodle, that is inspired by the [moodle-client](https://www.npmjs.com/package/moodle-client) by [mudrd8mz](https://www.npmjs.com/~mudrd8mz), it has built in typings and typings for many endpoints of the Moodle API(which are documented [here](https://learn.cineca.it/pluginfile.php/1/theme_adaptable/adaptablemarketingimages/0/api.htm)), the typings will be extended in the future till hopefully one day al endpoints are built in this package.
+This is a package provides you an event based Console in **Moodle** wich you can write and receive messages from. The Console is based on the `akora-moodle` package and has built-in typings, it is simple, fast and lightweight.
 
 <br>
 
 ## Why should i use this package?
-If you ever read the documentation of the Moodle API, then you know that there are hundrets of methods and if you dont have the right documentation the [docs](https://docs.moodle.org) can be hard to read and understand, you still need the documentation to use this package but it provides you most methods with built in types so that you know what you get back and what you need to supply to the request. 
+Bcs implementing this on your own would take quite a while and it just would be faster to use this package.
+You may ask, "What if i want to have a function that the package does not provide?", we would love to implement your hopefully usefull function and constantly improve our package, so feel free to [open a Issue or an Feature Request](https://github.com/AKORA-Studios/MoodleConsole/issues/new/choose!).
 
 <br>
 

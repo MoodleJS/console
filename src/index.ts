@@ -1,5 +1,5 @@
 /**
-  * @module akora-moodle
+  * @module moodle-console
   * @category Category Name
   */
 
@@ -10,14 +10,23 @@ interface ConsoleClientEvents {
     message: [typings.Core.message.get_messages.message];
 }
 
+const textformat = {
+    MOODLE: 0,
+    HTML: 1,
+    PLAIN: 2,
+    MARKDOWN: 4
+}
 
 export class ConsoleClient extends EventEmitter {
     //@ts-ignore
     public userid: number;
+    /** The cached chat history */
     //@ts-ignore
     public chat: typings.Core.message.get_messages.message[];
+    /** The currently loggen in user */
     //@ts-ignore
     public user: typings.Core.webservice_get_site_info.response;
+    /** The akora-moodle client */
     public client: Client;
 
     constructor(client: Client) {
@@ -26,8 +35,22 @@ export class ConsoleClient extends EventEmitter {
         this.client = client;
     }
 
+    /**
+     * This function initialises the Console by getting
+     * informations about the currently logged in User and starts
+     * checking for new messages, determined by the `timeout` option
+     * or every 10 seconds by default.
+     * 
+     * **IMPORTANT**
+     * 
+     * The console doesn't work before this method is called, and 
+     * calling it twice will break the console
+     * 
+     */
     public async initConsole(options: {
-        /** Timeout in ms between message checks */
+        /** Timeout in **ms** between every message check, by
+         *   default this set to **10** `seconds`
+        */
         timeout: number
     }) {
         const { timeout } = options ?? {};
@@ -54,15 +77,31 @@ export class ConsoleClient extends EventEmitter {
     }
 
     async send(...messages: {
+        /** The content of the message you send */
         text: string;
-        textformat: 0 | 1 | 2 | 4;
+        /** Textformat of the message, as example if set
+         * to `MARKDOWN` you can use markdown in your message,
+         * this option is set to`MARKDOWN` by default
+         */
+        textformat?: keyof typeof textformat;
+        /** IDK */
         clientmsgid?: string;
     }[]) {
-        var arr = messages as typings.Core.message.send_instant_messages.message[];
-        for (const i in arr)
+        var arr = messages;
+        for (const i in arr) {
+            //@ts-ignore
             arr[i].touserid = this.userid;
+            arr[i].textformat ??= 'MARKDOWN';
+            let format = arr[i].textformat?.toUpperCase();
+            //@ts-ignore
+            if (Object.keys(textformat).includes(format)) format = textformat[format];
+            else format = '4';
+            //@ts-ignore
+            arr[i].textformat = format;
+        }
 
         return this.client.core.message.sendInstantMessages({
+            //@ts-ignore
             messages: arr
         })
     }
