@@ -1,7 +1,7 @@
 {
-    "name": "akora-moodle",
-    "version": "1.0.1",
-    "description": "This is a moodle Client for the MoodleAPI that was inspired by the minimalistic moodle-client",
+    "name": "moodle-console",
+    "version": "1.0.0",
+    "description": "This is a ConsoleClient based on the akora-moodle provides a Console to interact with",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "scripts": {
@@ -13,6 +13,7 @@
     },
     "keywords": [
         "moodle",
+        "console",
         "akora",
         "typed",
         "typings"
@@ -29,7 +30,7 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git://github.com/AKORA-Studios/MoodleClient.git"
+        "url": "git://github.com/AKORA-Studios/MoodleConsole.git"
     },
     "publishConfig": {
         "access": "public"
@@ -40,6 +41,6 @@
         "typedoc": "^0.20.27"
     },
     "dependencies": {
-        "akora-moodle": "^1.0.1"
+        "akora-moodle": "^1.0.2"
     }
 }
