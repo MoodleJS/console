@@ -8,6 +8,11 @@ This is a package provides you an event based Console in **Moodle** wich you can
 
 <br>
 
+## How does it work?
+This console works by sending messages to yourself on Moodle, the Client receives your new message and you can execute some code with the message.
+
+<br>
+
 ## Why should i use this package?
 Bcs implementing this on your own would take quite a while and it just would be faster to use this package.
 You may ask, "What if i want to have a function that the package does not provide?", we would love to implement your hopefully usefull function and constantly improve our package, so feel free to [open a Issue or an Feature Request](https://github.com/AKORA-Studios/MoodleConsole/issues/new/choose!).
@@ -20,131 +25,49 @@ You may ask, "What if i want to have a function that the package does not provid
 npm install moodle-console
 ```
 
+<br>
+
 ## Creating an instance
-To create an instance of the Client, you use the static `init` method of the Client with an object which contains all needed options to initialize the client. The method will return a Promise wich returns a instance of the `Client` class.
+To create a instance of the `ConsoleClient`, first need a instance of a `Client` from the [akora-moodle](https://www.npmjs.com/package/akora-moodle) package, which you need provide in the constructor. More information on creating a `Client` can be found [here](https://www.npmjs.com/package/akora-moodle).
 
-<details open><summary>Here an example of an basic Login with your username, and password.</summary><p>
+<details open><summary>The most basic setup would be</summary><p>
 
 > ```js
-> const { Client } = require('moodle-console');
+> const { ConsoleClient } = require('moodle-console')
+> const { Client } = require('akora-moodle');
 > 
 > Client.init({
->     wwwroot: 'https://moodle.your-school.de/',
->     username: 'Bob',
->     password: 'SuPeRsecRet'
-> })
-> ```
-</p></details>
-
-<details open><summary>You can also log in with a token. (If credentials and token are provided token will be used).</summary><p>
-
-> ```js
-> Client.init({
->     wwwroot: 'https://moodle.your-school.de/',
->     token: 'yourtokengoesbrrrrrr'
-> })
-> ```
-</p></details>
-
-<br><br>
-
-----------
-
-## Built-in Methods
-At the moment all implemented methods can be found in the `client.core` property, your IDE will tell you what methods are already implemented and usable, as well as your IDE will tell you what arguments you need to provide and what the response looks like.
-
-<br>
-
-<details><summary>Here is a short example which gives you informations about the current logged in user.</summary><p>
-
-> ```js
-> const { Client } = require('moodle-console');
+>    wwwroot: 'https://moodle.your-school.de/',
+>    token: 'yourtokengoesbrrrrrr'
+> }).then(async client => {
+>     var con = new ConsoleClient(client);
+>     await con.initConsole();
 > 
-> Client.init({
->     wwwroot: 'https://moodle.your-school.de/',
->     token: 'yourtokengoesbrrrrrr'
-> }).then(async (client) => {
->     var info = await client.core.getInfo();
-> 
->     console.log('You are Logged in as %s %s', info.firstname, info.lastname)
-> }).catch((err) => {
->     console.log('Something went wrong ._.', err);
-> });
-> ```
-</p></details>
-
-<br>
-
-<details><summary>Here is a short example which returns you an array of course contents.</summary><p>
-
-> ```js
-> const { Client } = require('moodle-console');
-> 
-> client.init({
->     wwwroot: 'https://moodle.your-school.de/',
->     token: 'yourtokengoesbrrrrrr'
-> }).then(async (client) => {
->     var contents = await client.core.course.getContents({
->         courseid: 3272
->     });
->
->     console.log('There are %s Sections in this Course', contents.length)
-> }).catch((err) => {
->     console.log('Something went wrong ._.', err);
-> });
-> ```
-</p></details>
-
-<br>
-
-----------
-
-## Custom API Calls
-At the moment not even nearly all methods are implemented, so you might often want to use the `client.call` method to make a custom API Requests.
-
-<details><summary>An example</summary><p>
-
-> ```js
-> const { Client } = require('moodle-console');
-> 
-> Client.init({
->     wwwroot: 'https://moodle.your-school.de/',
->     token: 'yourtokengoesbrrrrrr',
-> }).then(async (client) => {
->     var response = await client.call({
->         wsfunction: 'core_not_implemented_yet',
->         method: 'POST',
->         args: {
->             someid: 123
->         }
->         //You can also provide settings > for advanced usage
+>     con.send({
+>         text: 'Hello World'
 >     })
-> }).catch((err) => {
->     console.log('Something went wrong ._.', err);
-> });
-> ```
-</p></details>
-
-
-<br>
-
-----------
-
-## Advanced Client settings
-<details><summary>All custom Settings</summary><p>
-
-> ```js
-> const { Client } = require('moodle-console');
-> 
-> Client.init({
->     wwwroot: 'https://moodle.your-school.de/',
->     token: 'yourtokengoesbrrrrrr',
->     // The web service to use, default is moodle_mobile_app
->     service: 'moodle_mobile_app',
->     // If set to false, SSL certificates do not need to be valid.
->     strictSSL: true,
->     // Will enable the built-in Logger
->     logger: true
 > })
 > ```
 </p></details>
+<br>
+
+## Listening to messages
+The `ConsoleClient` is a EventEmitter which means that you can listen to events with `.on('event', callback)`, currently only the `message` event is supported
+
+<details open><summary>Ping Pong!</summary><p>
+
+> ```js
+> var con = new ConsoleClient(client);
+> con.initConsole().then(async () => {
+>     await con.send({
+>         text: '**Started the Console!**'
+>     })
+>     
+>     con.on('message', async (message) => {
+>         await con.send({ text: 'Pong!' });
+>     });
+> })
+> ```
+</p></details>
+
+This would write back Pong every time you send a message to yourself in moodle.
