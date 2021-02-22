@@ -4,70 +4,10 @@
   */
 
 import EventEmitter from 'events';
-import { BaseClient, BaseClientOptions, CallOptions } from './base';
-import { CoreModule, Core } from './typings';
-
-export { Logger } from './base';
-export * as typings from './typings';
-
-
-
-type ClientOptions = BaseClientOptions;
-export class Client extends BaseClient {
-    public core: CoreModule;
-
-    constructor(options: ClientOptions) {
-        super(options);
-
-        this.core = new CoreModule();
-        this.core.call = (...args) => this.moduleCall(...args);
-    }
-
-    private moduleCall<Response, Args = any>(opts: CallOptions<Args>): Promise<Response> {
-        return this.call({
-            wsfunction: opts.endpoint,
-            args: this.moodlefy(opts.args),
-            method: opts.method,
-            settings: opts.settings
-        })
-    }
-
-    protected moodlefy<T>(obj: T): T {
-        for (const k in obj)
-            switch (typeof obj[k]) {
-                case 'object':
-                    if (Array.isArray(obj[k]))
-                        for (const i in obj[k]) obj[k][i] = this.moodlefy(obj[k][i]);
-                    else obj[k] = this.moodlefy(obj[k]);
-                    break;
-                default:
-                    //@ts-ignore
-                    if (obj[k] === true) obj[k] = 1;
-                    //@ts-ignore
-                    if (obj[k] === false) obj[k] = 0;
-                    break;
-            }
-
-        return obj;
-    }
-
-
-    static async init(options: ClientOptions) {
-        var client = new this(options);
-
-        if (client.token) return client;
-        else {
-            //@ts-ignore
-            if (!(options.username && options.password)) throw 'coding error: no username/password (or token) provided';
-            //@ts-ignore
-            return (await client.authenticate(options.username, options.password));
-        }
-    }
-}
-
+import { Client, typings } from 'akora-moodle';
 
 interface ConsoleClientEvents {
-    message: [Core.message.get_messages.message];
+    message: [typings.Core.message.get_messages.message];
 }
 
 
@@ -75,9 +15,9 @@ export class ConsoleClient extends EventEmitter {
     //@ts-ignore
     public userid: number;
     //@ts-ignore
-    public chat: Core.message.get_messages.message[];
+    public chat: typings.Core.message.get_messages.message[];
     //@ts-ignore
-    public user: Core.webservice_get_site_info.response;
+    public user: typings.Core.webservice_get_site_info.response;
     public client: Client;
 
     constructor(client: Client) {
@@ -118,7 +58,7 @@ export class ConsoleClient extends EventEmitter {
         textformat: 0 | 1 | 2 | 4;
         clientmsgid?: string;
     }[]) {
-        var arr = messages as Core.message.send_instant_messages.message[];
+        var arr = messages as typings.Core.message.send_instant_messages.message[];
         for (const i in arr)
             arr[i].touserid = this.userid;
 
