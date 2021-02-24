@@ -59,20 +59,36 @@ export class ConsoleClient extends EventEmitter {
         this.user = info;
 
         setInterval(async () => {
-
-            var chat = await this.client.core.getMessages({
+            var response = await this.client.core.getMessages({
                 useridfrom: this.userid + '',
                 useridto: this.userid + '',
                 limitnum: 2,
                 newestfirst: 1
             });
-            var { messages } = chat,
-                len = this.chat.length;
-            this.chat = this.chat.concat(this.chat, messages.filter(m => !this.chat.find(me => me.id === m.id)));
-            this.chat = this.chat.sort((a, b) => a.timecreated - b.timecreated);
+            var { messages: arr } = response,
+                before = this.chat.length;
 
-            if (len < this.chat.length)
-                this.emit('message', this.chat[(this.chat.length) - 1]);
+            //Sorting out already chached messages 
+            var arr = arr.filter(m => !this.chat.find(me => me.id === m.id));
+            //Adding messages into cache
+            this.chat.push(...arr);
+            //Sorting cach again
+            this.chat = this.chat.sort((a, b) => a.timecreated - b.timecreated);
+            var mapped = this.chat.map(m => {
+                return {
+                    id: m.id,
+                    text: m.smallmessage,
+                    createdAt: m.timecreated,
+                    readAt: m.timeread
+                }
+            })
+
+            if (before < this.chat.length) {
+                console.log('QwQ')
+                console.log(mapped[this.chat.length - 1])
+                //@ts-ignore
+                this.emit('message', mapped[(this.chat.length) - 1]);
+            }
         }, timeout ?? (1000 * 10))
     }
 
