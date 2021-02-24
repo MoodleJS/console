@@ -1,6 +1,6 @@
 {
     "name": "moodle-console",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "This is a ConsoleClient based on the akora-moodle provides a Console to interact with",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
